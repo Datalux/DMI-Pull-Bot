@@ -88,29 +88,37 @@ def message_handle(bot, update):
 
         if text == "Invia un sondaggio nel formato: <sondaggio>-[<opzione1>,<opzione2>]":
             options = update.message.text.split('-')
-            if len(options[1]) > 0 and options[1][0] == '[' and options[1][len(options[1])-1] == ']':
-                text = options[0]
-                o = options[1][1:-1]
-                opts = o.split(',')
-                if len(opts) == 2:
-                    for admin_id in ADMINS_ID:
-                        available, message_reply = handle_type(bot, update.message, text, opts[0], opts[1], admin_id)
+            chat_id = update.message.chat_id
+            
+            if '-' in options:
+                if len(options[1]) > 0 and options[1][0] == '[' and options[1][len(options[1])-1] == ']':
+                    text = options[0]
+                    o = options[1][1:-1]
+                    opts = o.split(',')
+                    if len(opts) == 2:
+                        for admin_id in ADMINS_ID:
+                            available, message_reply = handle_type(bot, update.message, text, opts[0], opts[1], admin_id)
 
-                        if available:
-                            message_id = update.message.message_id
-                            chat_id = update.message.chat_id
-                            candidate_msgid = message_reply.message_id
-                            
-                            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Sì",callback_data = '0'),InlineKeyboardButton("No", callback_data = '1')]])
-                            
-                            bot.sendMessage(chat_id = admin_id, text = "Pubblicare il seguente messaggio?", reply_markup = reply_markup, reply_to_message_id = candidate_msgid)
-                            
-                            dataf.add_pending_spot(candidate_msgid, chat_id, message_id, text, opts[0], opts[1])
-                            
-                            bot.sendMessage(chat_id = chat_id, text = "Il tuo messaggio è in fase di valutazione.\nTi informeremo non appena verrà analizzato.")
-                            
-                        else:
-                            bot.sendMessage(chat_id = chat_id, text = "È possibile solo inviare messaggi di testo, immagini, audio o video")
+                            if available:
+                                message_id = update.message.message_id
+                                candidate_msgid = message_reply.message_id
+                                
+                                reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Sì",callback_data = '0'),InlineKeyboardButton("No", callback_data = '1')]])
+                                
+                                bot.sendMessage(chat_id = admin_id, text = "Pubblicare il seguente messaggio?", reply_markup = reply_markup, reply_to_message_id = candidate_msgid)
+                                
+                                dataf.add_pending_spot(candidate_msgid, chat_id, message_id, text, opts[0], opts[1])
+                                
+                                bot.sendMessage(chat_id = chat_id, text = "Il tuo messaggio è in fase di valutazione.\nTi informeremo non appena verrà analizzato.")
+                                
+                            else:
+                                bot.sendMessage(chat_id = chat_id, text = "È possibile solo inviare messaggi di testo, immagini, audio o video")
+                    else:
+                        bot.sendMessage(chat_id = chat_id, text = "Inviare due opzioni")                                                        
+                else:
+                    bot.sendMessage(chat_id = chat_id, text = "Messaggio malformato. La sintassi corretta è: <sondaggio>-[<opzione1>,<opzione2>]")
+            else:
+                bot.sendMessage(chat_id = chat_id, text = "Messaggio malformato. La sintassi corretta è: <sondaggio>-[<opzione1>,<opzione2>]")
 				      
         elif text.split("|")[0] == "Scrivi la modifica da proporre." or text.split("|")[0] == "Invia la proposta come testo!":
             data = text.split("|")
