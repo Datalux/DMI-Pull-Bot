@@ -85,16 +85,19 @@ def message_handle(bot, update):
     print(update.message.text)	
     try:
         text = update.message.reply_to_message.text
+        chat_id = update.message.chat_id
 
         if text == "Invia un sondaggio nel formato: <sondaggio>-[<opzione1>,<opzione2>]":
-            options = update.message.text.split('-')
-            chat_id = update.message.chat_id
-            
+            options = update.message.text
             if '-' in options:
-                if len(options[1]) > 0 and options[1][0] == '[' and options[1][len(options[1])-1] == ']':
-                    text = options[0]
-                    o = options[1][1:-1]
+                op = options.split('-')
+                if len(op[1]) > 0 and op[1][0] == '[' and op[1][len(op[1])-1] == ']':
+                    text = op[0]
+                    o = op[1][1:-1]
                     opts = o.split(',')
+                    print(text)
+                    print(opts[0])
+                    print(opts[1])
                     if len(opts) == 2:
                         for admin_id in ADMINS_ID:
                             available, message_reply = handle_type(bot, update.message, text, opts[0], opts[1], admin_id)
@@ -116,7 +119,7 @@ def message_handle(bot, update):
                     else:
                         bot.sendMessage(chat_id = chat_id, text = "Inviare due opzioni")                                                        
                 else:
-                    bot.sendMessage(chat_id = chat_id, text = "Messaggio malformato. La sintassi corretta è: <sondaggio>-[<opzione1>,<opzione2>]")
+                    bot.sendMessage(chat_id = chat_id, text = "Messaggio malformato")
             else:
                 bot.sendMessage(chat_id = chat_id, text = "Messaggio malformato. La sintassi corretta è: <sondaggio>-[<opzione1>,<opzione2>]")
 				      
