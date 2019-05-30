@@ -93,23 +93,24 @@ def message_handle(bot, update):
 				o = options[1][1:-1]
 				opts = o.split(',')
 				if len(opts) == 2:
-					available, message_reply = handle_type(bot, update.message, text, opts[0], opts[1], ADMINS_ID)
-					        			
-					if available:
-						message_id = update.message.message_id
-						chat_id = update.message.chat_id
-						candidate_msgid = message_reply.message_id
-        				
-						reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Sì",callback_data = '0'),InlineKeyboardButton("No", callback_data = '1')]])
-        				
-						bot.sendMessage(chat_id = ADMINS_ID, text = "Pubblicare il seguente messaggio?", reply_markup = reply_markup, reply_to_message_id = candidate_msgid)
-        				
-						dataf.add_pending_spot(candidate_msgid, chat_id, message_id, text, opts[0], opts[1])
-        				
-						bot.sendMessage(chat_id = chat_id, text = "Il tuo messaggio è in fase di valutazione.\nTi informeremo non appena verrà analizzato.")
-        				
-					else:
-						bot.sendMessage(chat_id = chat_id, text = "È possibile solo inviare messaggi di testo, immagini, audio o video")
+                    for admin_id in ADMINS_ID:
+                        available, message_reply = handle_type(bot, update.message, text, opts[0], opts[1], admin_id)
+
+                        if available:
+                            message_id = update.message.message_id
+                            chat_id = update.message.chat_id
+                            candidate_msgid = message_reply.message_id
+                            
+                            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Sì",callback_data = '0'),InlineKeyboardButton("No", callback_data = '1')]])
+                            
+                            bot.sendMessage(chat_id = admin_id, text = "Pubblicare il seguente messaggio?", reply_markup = reply_markup, reply_to_message_id = candidate_msgid)
+                            
+                            dataf.add_pending_spot(candidate_msgid, chat_id, message_id, text, opts[0], opts[1])
+                            
+                            bot.sendMessage(chat_id = chat_id, text = "Il tuo messaggio è in fase di valutazione.\nTi informeremo non appena verrà analizzato.")
+                            
+                        else:
+                            bot.sendMessage(chat_id = chat_id, text = "È possibile solo inviare messaggi di testo, immagini, audio o video")
 				      
 		elif text.split("|")[0] == "Scrivi la modifica da proporre." or text.split("|")[0] == "Invia la proposta come testo!":
 			data = text.split("|")
@@ -268,12 +269,13 @@ def spot_edit(bot, message, query):
 
 def ban_cmd(bot, update, args):
     try:
-        if update.message.chat_id == int(ADMINS_ID):
-            user_id = args
-            message = bot.sendMessage(chat_id = int(user_id[0]), text = "Sei stato bannato.")
-            if message:
-                f = open("data/banned.lst", "a+")
-                f.write(user_id[0]+"\n")
+        for admin_id in ADMINS_ID:
+            if update.message.chat_id == int(admin_id):
+                user_id = args
+                message = bot.sendMessage(chat_id = int(user_id[0]), text = "Sei stato bannato.")
+                if message:
+                    f = open("data/banned.lst", "a+")
+                    f.write(user_id[0]+"\n")
     except Exception as e:
         log_error("ban", e)
 			
