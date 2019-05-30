@@ -82,17 +82,17 @@ def spot_cmd(bot, update):
 # Function: message_handle
 # Handle the user text response to bot message
 def message_handle(bot, update):
-	print(update.message.text)	
-	try:
-		text = update.message.reply_to_message.text
+    print(update.message.text)	
+    try:
+        text = update.message.reply_to_message.text
 
-		if text == "Invia un sondaggio nel formato: <sondaggio>-[<opzione1>,<opzione2>]":
-			options = update.message.text.split('-')
-			if len(options[1]) > 0 and options[1][0] == '[' and options[1][len(options[1])-1] == ']':
-				text = options[0]
-				o = options[1][1:-1]
-				opts = o.split(',')
-				if len(opts) == 2:
+        if text == "Invia un sondaggio nel formato: <sondaggio>-[<opzione1>,<opzione2>]":
+            options = update.message.text.split('-')
+            if len(options[1]) > 0 and options[1][0] == '[' and options[1][len(options[1])-1] == ']':
+                text = options[0]
+                o = options[1][1:-1]
+                opts = o.split(',')
+                if len(opts) == 2:
                     for admin_id in ADMINS_ID:
                         available, message_reply = handle_type(bot, update.message, text, opts[0], opts[1], admin_id)
 
@@ -112,18 +112,18 @@ def message_handle(bot, update):
                         else:
                             bot.sendMessage(chat_id = chat_id, text = "È possibile solo inviare messaggi di testo, immagini, audio o video")
 				      
-		elif text.split("|")[0] == "Scrivi la modifica da proporre." or text.split("|")[0] == "Invia la proposta come testo!":
-			data = text.split("|")
-			chat_id = int(data[-1])
-			message_id = int(data[-2])
-			if update.message.text:
-				bot.sendMessage(chat_id = chat_id, reply_to_message_id = message_id, text = update.message.text)
-				bot.sendMessage(chat_id = update.message.chat_id, text = "Proposta inviata.")
-			else:
-				bot.editMessageText(chat_id = update.message.chat_id, message_id = update.message.message_id,
-				text = "Invia la proposta come messaggio di testo!|\n\n\n|%d|%d" % (message_id, chat_id))
-	except Exception as e:
-		log_error("message_handler", e)
+        elif text.split("|")[0] == "Scrivi la modifica da proporre." or text.split("|")[0] == "Invia la proposta come testo!":
+            data = text.split("|")
+            chat_id = int(data[-1])
+            message_id = int(data[-2])
+            if update.message.text:
+                bot.sendMessage(chat_id = chat_id, reply_to_message_id = message_id, text = update.message.text)
+                bot.sendMessage(chat_id = update.message.chat_id, text = "Proposta inviata.")
+            else:
+                bot.editMessageText(chat_id = update.message.chat_id, message_id = update.message.message_id,
+                text = "Invia la proposta come messaggio di testo!|\n\n\n|%d|%d" % (message_id, chat_id))
+    except Exception as e:
+        log_error("message_handler", e)
 
 # Function: handle_type
 # Return True if the message is a text a photo, a voice, an audio or a video; False otherwise
