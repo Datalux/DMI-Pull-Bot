@@ -2,7 +2,7 @@
 
 1. _Di cosa si tratta?_
 
-Questo bot permette agli studenti di tutto l'ateneo di pubblicare un messaggio una foto o un video nel canale @dmipull, restando totalmente anonimi.
+Questo bot permette agli studenti di tutto l'ateneo di pubblicare un sondaggio nel canale @dmipull, restando totalmente anonimi.
 
 DMI Pull Bot è un fork di @Spotted\_DMI
 
